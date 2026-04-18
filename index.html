@@ -40,7 +40,7 @@
     }
     
     /* ========================================
-       LOADING SCREEN - KUBUS 3D (VERSI KECIL & CEPAT)
+       LOADING SCREEN - KUBUS 3D
        ======================================== */
     .loading { 
       position: fixed; 
@@ -62,25 +62,21 @@
       pointer-events: none;
     }
 
-    /* Kontainer Kubus (Diperkecil jadi 40px) */
     .cube-container {
       width: 40px;
       height: 40px;
-      perspective: 150px; /* Penyesuaian perspektif */
+      perspective: 150px;
       margin-bottom: 25px;
     }
 
-    /* Kubus 3D */
     .cube {
       width: 100%;
       height: 100%;
       position: relative;
       transform-style: preserve-3d;
-      /* DIPERCEPAT: Dari 4s menjadi 1.5s */
       animation: rotateCube 1.5s infinite linear; 
     }
 
-    /* Sisi-sisi Kubus (Ukuran 40px) */
     .face {
       position: absolute;
       width: 40px;
@@ -91,12 +87,11 @@
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 18px; /* Ukuran font disesuaikan */
+      font-size: 18px;
       color: rgba(0,0,0,0.3);
       box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
     }
 
-    /* Posisi & Warna Sisi (TranslateZ disesuaikan dengan setengah ukuran = 20px) */
     .front  { background: rgba(239, 68, 68, 0.9); transform: rotateY(0deg) translateZ(20px); }
     .back   { background: rgba(249, 115, 22, 0.9); transform: rotateY(180deg) translateZ(20px); }
     .right  { background: rgba(34, 197, 94, 0.9); transform: rotateY(90deg) translateZ(20px); }
@@ -104,7 +99,6 @@
     .top    { background: rgba(255, 255, 255, 0.95); transform: rotateX(90deg) translateZ(20px); }
     .bottom { background: rgba(234, 179, 8, 0.9); transform: rotateX(-90deg) translateZ(20px); }
 
-    /* Animasi Rotasi */
     @keyframes rotateCube {
       0%   { transform: rotateX(0deg) rotateY(0deg); }
       25%  { transform: rotateX(90deg) rotateY(90deg); }
@@ -113,7 +107,6 @@
       100% { transform: rotateX(360deg) rotateY(360deg); }
     }
 
-    /* Teks Memuat Aplikasi */
     .loading-text {
       font-size: 1rem;
       font-weight: 600;
@@ -155,59 +148,64 @@
     </div>
 
     <div class="iframe-container">
-      <iframe id="appFrame" src="" allow="fullscreen; camera; microphone" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"></iframe>
+      <!-- allow-popups-to-escape-sandbox: agar tab baru dari iframe TIDAK ter-sandbox -->
+      <iframe id="appFrame" src="" allow="fullscreen; camera; microphone" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"></iframe>
     </div>
   </div>
 
   <script>
     // =============================================
-// HANDLER REQUEST DARI IFRAME (DOWNLOAD & FULLSCREEN)
-// =============================================
-window.addEventListener('message', function(event) {
-  try {
-    const data = event.data;
-    if (!data || typeof data !== 'object') return;
-
-    // 1. DOWNLOAD: Buka tab baru dari parent window
-    if (data.action === 'openDownload' && data.url) {
-      window.open(data.url, '_blank');
-      return;
-    }
-
-    // 2. FULLSCREEN: Jalankan dari parent document
-    if (data.action === 'requestFullscreen') {
-      const el = document.documentElement;
-      const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
-      if (fn) fn.call(el).catch(function(){});
-      return;
-    }
-  } catch(e) {
-    console.warn('PostMessage error:', e);
-  }
-});
     // URL Google Apps Script Anda
-    const APP_URL = "https://script.google.com/macros/s/AKfycbywJyekSJ9AVcLXHCNQp729vxZXfi_ptas2DjhmGAy2glgF1lmpj1qfHOXoOnrDP18Lhw/exec";
+    // =============================================
+    var APP_URL = "https://script.google.com/macros/s/AKfycbywJyekSJ9AVcLXHCNQp729vxZXfi_ptas2DjhmGAy2glgF1lmpj1qfHOXoOnrDP18Lhw/exec";
     
-    const appFrame = document.getElementById('appFrame');
-    const loading = document.getElementById('loading');
+    var appFrame = document.getElementById('appFrame');
+    var loading = document.getElementById('loading');
 
-    // ==========================================
+    // =============================================
+    // HANDLER REQUEST DARI IFRAME
+    // =============================================
+    window.addEventListener('message', function(event) {
+      try {
+        var data = event.data;
+        if (!data || typeof data !== 'object') return;
+
+        // 1. Buka tab kosong atas nama parent (user gesture masih aktif)
+        if (data.action === 'openBlank') {
+          window.open('', '_blank');
+          return;
+        }
+
+        // 2. Buka URL langsung dari parent (fallback jika langsung berhasil)
+        if (data.action === 'openDownload' && data.url) {
+          window.open(data.url, '_blank');
+          return;
+        }
+
+        // 3. Fullscreen dari parent document
+        if (data.action === 'requestFullscreen') {
+          var el = document.documentElement;
+          var fn = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+          if (fn) fn.call(el).catch(function(){});
+          return;
+        }
+      } catch(e) {
+        console.warn('PostMessage error:', e);
+      }
+    });
+
+    // =============================================
     // LOGIKA DELAY 6 DETIK
-    // ==========================================
-    const startTime = Date.now();
-    const MIN_LOAD_TIME = 6000; // 6 detik dalam milidetik
+    // =============================================
+    var startTime = Date.now();
+    var MIN_LOAD_TIME = 6000;
     
     function loadApp() {
-      const fullUrl = window.location.href;
-      const params = new URLSearchParams(window.location.search);
-      const id = params.get('id');
+      var fullUrl = window.location.href;
+      var params = new URLSearchParams(window.location.search);
+      var id = params.get('id');
       
-      console.log("=== DEBUG GITHUB ===");
-      console.log("Full URL yg dibuka:", fullUrl);
-      console.log("ID terbaca:", id);
-      console.log("====================");
-
-      let targetUrl = APP_URL;
+      var targetUrl = APP_URL;
       
       if (id) {
         if (targetUrl.indexOf('?') !== -1) {
@@ -215,31 +213,22 @@ window.addEventListener('message', function(event) {
         } else {
              targetUrl += "?id=" + id;
         }
-        console.log("Meneruskan ID ke Iframe:", id);
-      } else {
-        console.log("TIDAK ADA ID. Mode Normal.");
       }
       
       appFrame.src = targetUrl;
     }
     
-    // Fungsi untuk menyembunyikan loading dengan aman
     function hideLoading() {
       loading.classList.add('hidden');
     }
 
-    // Event Listener untuk Iframe
     appFrame.addEventListener('load', function() {
-      // Hitung berapa lama waktu yang sudah berlalu
-      const elapsedTime = Date.now() - startTime;
-      const remainingTime = MIN_LOAD_TIME - elapsedTime;
+      var elapsedTime = Date.now() - startTime;
+      var remainingTime = MIN_LOAD_TIME - elapsedTime;
 
-      // Jika belum 6 detik, tunggu sisa waktunya
       if (remainingTime > 0) {
-        console.log(`Konten siap, menunggu ${remainingTime}ms agar genap 6 detik...`);
         setTimeout(hideLoading, remainingTime);
       } else {
-        // Jika sudah lebih dari 6 detik, langsung sembunyikan
         hideLoading();
       }
     });
