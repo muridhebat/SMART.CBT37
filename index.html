@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SMART CBT</title>
+  <title>SMART ~ CBT</title>
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/9805/9805578.png" type="image/x-icon">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -39,6 +39,9 @@
       background: #f1f5f9; 
     }
     
+    /* ========================================
+       LOADING SCREEN - KUBUS 3D (VERSI KECIL & CEPAT)
+       ======================================== */
     .loading { 
       position: fixed; 
       top: 0; 
@@ -59,21 +62,25 @@
       pointer-events: none;
     }
 
+    /* Kontainer Kubus (Diperkecil jadi 40px) */
     .cube-container {
       width: 40px;
       height: 40px;
-      perspective: 150px;
+      perspective: 150px; /* Penyesuaian perspektif */
       margin-bottom: 25px;
     }
 
+    /* Kubus 3D */
     .cube {
       width: 100%;
       height: 100%;
       position: relative;
       transform-style: preserve-3d;
+      /* DIPERCEPAT: Dari 4s menjadi 1.5s */
       animation: rotateCube 1.5s infinite linear; 
     }
 
+    /* Sisi-sisi Kubus (Ukuran 40px) */
     .face {
       position: absolute;
       width: 40px;
@@ -84,11 +91,12 @@
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 18px; 
+      font-size: 18px; /* Ukuran font disesuaikan */
       color: rgba(0,0,0,0.3);
       box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
     }
 
+    /* Posisi & Warna Sisi (TranslateZ disesuaikan dengan setengah ukuran = 20px) */
     .front  { background: rgba(239, 68, 68, 0.9); transform: rotateY(0deg) translateZ(20px); }
     .back   { background: rgba(249, 115, 22, 0.9); transform: rotateY(180deg) translateZ(20px); }
     .right  { background: rgba(34, 197, 94, 0.9); transform: rotateY(90deg) translateZ(20px); }
@@ -96,6 +104,7 @@
     .top    { background: rgba(255, 255, 255, 0.95); transform: rotateX(90deg) translateZ(20px); }
     .bottom { background: rgba(234, 179, 8, 0.9); transform: rotateX(-90deg) translateZ(20px); }
 
+    /* Animasi Rotasi */
     @keyframes rotateCube {
       0%   { transform: rotateX(0deg) rotateY(0deg); }
       25%  { transform: rotateX(90deg) rotateY(90deg); }
@@ -104,6 +113,7 @@
       100% { transform: rotateX(360deg) rotateY(360deg); }
     }
 
+    /* Teks Memuat Aplikasi */
     .loading-text {
       font-size: 1rem;
       font-weight: 600;
@@ -122,102 +132,6 @@
       40% { content: '.'; }
       60% { content: '..'; }
       80%, 100% { content: '...'; }
-    }
-
-    /* ========================================
-       TAMPILAN PESAN ERROR
-       ======================================== */
-    .error-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      text-align: center;
-      padding: 40px 20px;
-      font-family: 'Segoe UI', sans-serif;
-    }
-
-    .error-box {
-      background: #fff;
-      border: 2px solid #fecaca;
-      border-radius: 16px;
-      padding: 40px;
-      max-width: 500px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    }
-
-    .error-icon {
-      font-size: 56px;
-      margin-bottom: 16px;
-      color: #dc2626;
-    }
-
-    .error-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: #1e293b;
-      margin-bottom: 12px;
-    }
-
-    .error-desc {
-      font-size: 14px;
-      color: #64748b;
-      line-height: 1.6;
-      margin-bottom: 24px;
-    }
-
-    .error-step {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 12px 16px;
-      text-align: left;
-      margin-bottom: 12px;
-      width: 100%;
-    }
-
-    .error-step-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #dc2626;
-      margin-bottom: 4px;
-    }
-
-    .error-step-desc {
-      font-size: 13px;
-      color: #475569;
-      line-height: 1.5;
-    }
-
-    .error-step code {
-      background: #f1f5f9;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 12px;
-      color: #be123c;
-    }
-
-    .btn-retry {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #3b82f6;
-      color: #fff;
-      border: none;
-      padding: 12px 28px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.2s;
-      margin-top: 8px;
-    }
-
-    .btn-retry:hover {
-      background: #2563eb;
     }
 
   </style>
@@ -240,125 +154,97 @@
       <p class="loading-text">Memuat Aplikasi</p>
     </div>
 
-    <!-- Container untuk Iframe atau Pesan Error -->
-    <div class="iframe-container" id="iframeContainer">
-      <iframe id="appFrame" src="" allow="fullscreen; camera; microphone" sandbox="allow-scripts allow-forms allow-popups allow-modals allow-downloads"></iframe>
+    <div class="iframe-container">
+      <iframe id="appFrame" src="" allow="fullscreen; camera; microphone" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"></iframe>
     </div>
-
-    <!-- Pesan Error (Awalnya tersembunyi, akan ditampilkan oleh JavaScript jika ada error) -->
-    <div class="iframe-container" id="errorContainer" style="display: none;">
-      <div class="error-container">
-        <div class="error-box">
-          <div class="error-icon">⚠️</div>
-          <div class="error-title">Gagal Memuat Aplikasi</div>
-          <div class="error-desc">
-            Terjadi error pada script. Kemungkinan ada kode JavaScript yang rusak di file <strong>index.html</strong> (Google Apps Script).
-          </div>
-          
-          <div class="error-step">
-            <div class="error-step-title">LANGKAH 1: Buka Link Script Langsung</div>
-            <div class="error-step-desc">
-              Buka link Apps Script di browser (bukan lewat GitHub Pages).<br>
-              <strong>URL:</strong> <code id="scriptUrlDisplay" style="word-break:break-all;"></code>
-            </div>
-          </div>
-
-          <div class="error-step">
-            <div class="error-step-title">LANGKAH 2: Buka Console (F12)</div>
-            <div class="error-step-desc">
-              Tekan <code>F12</code> → tab <strong>Console</strong> → lihat pesan error merah.<br>
-              <strong>Jika tidak ada error</strong> di Console, masuk ke tab <strong>Network</strong> → klik file <code>index.html</code> → lihat responsenya.
-            </div>
-          </div>
-
-          <div class="error-step">
-            <div class="error-step-title">LANGKAH 3: Perbaiki Error di Kode.gs</div>
-            <div class="error-step-desc">
-              Setelah menemukan pesan error, perbaiki di file <strong>Kode.gs</strong> di Google Apps Script Editor, lalu deploy ulang.
-            </div>
-          </div>
-
-          <button class="btn-retry" onclick="location.reload()">
-            🔄 Coba Lagi
-          </button>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <script>
-    // URL Google Apps Script Anda
-    const ORIGINAL_URL = "https://script.google.com/macros/s/AKfycbywJyekSJ9AVcLXHCNQp729vxZXfi_ptas2DjhmGAy2glgF1lmpj1qfHOXoOnrDP18Lhw/exec";
-     const PROXY_PREFIX = "https://corsproxy.io/?url=";
-    const APP_URL = PROXY_PREFIX + encodeURIComponent(ORIGINAL_URL);
-    const appFrame = document.getElementById("appFrame");
-    const loading = document.getElementById("loading");
-    const iframeContainer = document.getElementById("iframeContainer");
-    const errorContainer = document.getElementById("errorContainer");
-    
-    // Tampilkan URL script untuk memudahkan debugging
-    document.getElementById("scriptUrlDisplay").textContent = APP_URL;
+    // =============================================
+// HANDLER REQUEST DARI IFRAME (DOWNLOAD & FULLSCREEN)
+// =============================================
+window.addEventListener('message', function(event) {
+  try {
+    const data = event.data;
+    if (!data || typeof data !== 'object') return;
 
+    // 1. DOWNLOAD: Buka tab baru dari parent window
+    if (data.action === 'openDownload' && data.url) {
+      window.open(data.url, '_blank');
+      return;
+    }
+
+    // 2. FULLSCREEN: Jalankan dari parent document
+    if (data.action === 'requestFullscreen') {
+      const el = document.documentElement;
+      const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+      if (fn) fn.call(el).catch(function(){});
+      return;
+    }
+  } catch(e) {
+    console.warn('PostMessage error:', e);
+  }
+});
+    // URL Google Apps Script Anda
+    const APP_URL = "https://script.google.com/macros/s/AKfycbywJyekSJ9AVcLXHCNQp729vxZXfi_ptas2DjhmGAy2glgF1lmpj1qfHOXoOnrDP18Lhw/exec";
+    
+    const appFrame = document.getElementById('appFrame');
+    const loading = document.getElementById('loading');
+
+    // ==========================================
+    // LOGIKA DELAY 6 DETIK
+    // ==========================================
     const startTime = Date.now();
-    const MIN_LOAD_TIME = 6000; 
+    const MIN_LOAD_TIME = 6000; // 6 detik dalam milidetik
     
     function loadApp() {
+      const fullUrl = window.location.href;
       const params = new URLSearchParams(window.location.search);
-      const id = params.get("id");
+      const id = params.get('id');
       
+      console.log("=== DEBUG GITHUB ===");
+      console.log("Full URL yg dibuka:", fullUrl);
+      console.log("ID terbaca:", id);
+      console.log("====================");
+
       let targetUrl = APP_URL;
       
       if (id) {
-        if (targetUrl.indexOf("?") !== -1) {
+        if (targetUrl.indexOf('?') !== -1) {
              targetUrl += "&id=" + id;
         } else {
              targetUrl += "?id=" + id;
         }
+        console.log("Meneruskan ID ke Iframe:", id);
+      } else {
+        console.log("TIDAK ADA ID. Mode Normal.");
       }
       
       appFrame.src = targetUrl;
     }
     
+    // Fungsi untuk menyembunyikan loading dengan aman
     function hideLoading() {
-      loading.classList.add("hidden");
+      loading.classList.add('hidden');
     }
 
-    function showError() {
-      // Sembunyikan iframe dan loading, tampilkan pesan error
-      iframeContainer.style.display = "none";
-      errorContainer.style.display = "flex";
-      loading.classList.add("hidden");
-    }
-
-    // ==========================================
-    // DETEKSI JIKA IFRAME GAGAL MEMUAT
-    // ==========================================
-    appFrame.addEventListener("error", function() {
-      showError();
-    });
-    
-    appFrame.addEventListener("load", function() {
+    // Event Listener untuk Iframe
+    appFrame.addEventListener('load', function() {
+      // Hitung berapa lama waktu yang sudah berlalu
       const elapsedTime = Date.now() - startTime;
       const remainingTime = MIN_LOAD_TIME - elapsedTime;
 
+      // Jika belum 6 detik, tunggu sisa waktunya
       if (remainingTime > 0) {
+        console.log(`Konten siap, menunggu ${remainingTime}ms agar genap 6 detik...`);
         setTimeout(hideLoading, remainingTime);
       } else {
+        // Jika sudah lebih dari 6 detik, langsung sembunyikan
         hideLoading();
       }
     });
     
-    // ==========================================
-    // TANGKAP PESAN DOWNLOAD DARI IFRAME
-    // ==========================================
-    window.addEventListener("message", function(event) {
-      if (event.data && event.data.action === "download" && event.data.url) {
-        window.open(event.data.url, "_blank");
-      }
-    });
-
-    window.addEventListener("DOMContentLoaded", loadApp);
+    window.addEventListener('DOMContentLoaded', loadApp);
   </script>
 </body>
 </html>
