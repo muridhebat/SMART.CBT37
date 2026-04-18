@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SMART CBT</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/9805/9805578.png" type="image/x-icon">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    html, body { 
+      width: 100%; 
+      height: 100%; 
+      background: #FFFFF0; 
+      font-family: 'Segoe UI', sans-serif; 
+      overflow: hidden; 
+    }
+    
+    .container { 
+      width: 100%; 
+      height: 100vh; 
+      height: -webkit-fill-available; 
+      display: flex; 
+      flex-direction: column; 
+    }
+    
+    .iframe-container { 
+      flex: 1; 
+      width: 100%; 
+      height: 100%; 
+      position: relative; 
+      overflow: hidden; 
+    }
+    
+    iframe { 
+      width: 100%; 
+      height: 100%; 
+      border: none; 
+      background: #f1f5f9; 
+    }
+    
+    .loading { 
+      position: fixed; 
+      top: 0; 
+      left: 0;
+      width: 100%; 
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e0e7ff 0%, #f1f5f9 50%, #dbeafe 100%);
+      z-index: 10; 
+      transition: opacity 0.5s ease;
+    }
+
+    .loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .cube-container {
+      width: 40px;
+      height: 40px;
+      perspective: 150px;
+      margin-bottom: 25px;
+    }
+
+    .cube {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotateCube 1.5s infinite linear; 
+    }
+
+    .face {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px; 
+      color: rgba(0,0,0,0.3);
+      box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+    }
+
+    .front  { background: rgba(239, 68, 68, 0.9); transform: rotateY(0deg) translateZ(20px); }
+    .back   { background: rgba(249, 115, 22, 0.9); transform: rotateY(180deg) translateZ(20px); }
+    .right  { background: rgba(34, 197, 94, 0.9); transform: rotateY(90deg) translateZ(20px); }
+    .left   { background: rgba(59, 130, 246, 0.9); transform: rotateY(-90deg) translateZ(20px); }
+    .top    { background: rgba(255, 255, 255, 0.95); transform: rotateX(90deg) translateZ(20px); }
+    .bottom { background: rgba(234, 179, 8, 0.9); transform: rotateX(-90deg) translateZ(20px); }
+
+    @keyframes rotateCube {
+      0%   { transform: rotateX(0deg) rotateY(0deg); }
+      25%  { transform: rotateX(90deg) rotateY(90deg); }
+      50%  { transform: rotateX(180deg) rotateY(180deg); }
+      75%  { transform: rotateX(270deg) rotateY(270deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+
+    .loading-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #334155;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .loading-text::after {
+      content: '';
+      animation: dots 2s infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: ''; }
+      40% { content: '.'; }
+      60% { content: '..'; }
+      80%, 100% { content: '...'; }
+    }
+
+    /* ========================================
+       TAMPILAN PESAN ERROR
+       ======================================== */
+    .error-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      padding: 40px 20px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .error-box {
+      background: #fff;
+      border: 2px solid #fecaca;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 500px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .error-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+      color: #dc2626;
+    }
+
+    .error-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 12px;
+    }
+
+    .error-desc {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .error-step {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: left;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    .error-step-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #dc2626;
+      margin-bottom: 4px;
+    }
+
+    .error-step-desc {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .error-step code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #be123c;
+    }
+
+    .btn-retry {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn-retry:hover {
+      background: #2563eb;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+      <div class="cube-container">
+        <div class="cube">
+          <div class="face front">∑</div>
+          <div class="face back">π</div>
+          <div class="face right">∫</div>
+          <div class="face left">∞</div>
+          <div class="face top">÷</div>
+          <div class="face bottom">√</div>
+        </div>
+      </div>
+      <p class="loading-text">Memuat Aplikasi</p>
+    </div>
+
+    <!-- Container untuk Iframe atau Pesan Error -->
+    <div class="iframe-container" id="iframeContainer">
+      <iframe id="appFrame" src="" allow="fullscreen; camera; microphone" sandbox="allow-scripts allow-forms allow-popups allow-modals allow-downloads"></iframe>
+    </div>
+
+    <!-- Pesan Error (Awalnya tersembunyi, akan ditampilkan oleh JavaScript jika ada error) -->
+    <div class="iframe-container" id="errorContainer" style="display: none;">
+      <div class="error-container">
+        <div class="error-box">
+          <div class="error-icon">⚠️</div>
+          <div class="error-title">Gagal Memuat Aplikasi</div>
+          <div class="error-desc">
+            Terjadi error pada script. Kemungkinan ada kode JavaScript yang rusak di file <strong>index.html</strong> (Google Apps Script).
+          </div>
+          
+          <div class="error-step">
+            <div class="error-step-title">LANGKAH 1: Buka Link Script Langsung</div>
+            <div class="error-step-desc">
+              Buka link Apps Script di browser (bukan lewat GitHub Pages).<br>
+              <strong>URL:</strong> <code id="scriptUrlDisplay" style="word-break:break-all;"></code>
+            </div>
+          </div>
+
+          <div class="error-step">
+            <div class="error-step-title">LANGKAH 2: Buka Console (F12)</div>
+            <div class="error-step-desc">
+              Tekan <code>F12</code> → tab <strong>Console</strong> → lihat pesan error merah.<br>
+              <strong>Jika tidak ada error</strong> di Console, masuk ke tab <strong>Network</strong> → klik file <code>index.html</code> → lihat responsenya.
+            </div>
+          </div>
+
+          <div class="error-step">
+            <div class="error-step-title">LANGKAH 3: Perbaiki Error di Kode.gs</div>
+            <div class="error-step-desc">
+              Setelah menemukan pesan error, perbaiki di file <strong>Kode.gs</strong> di Google Apps Script Editor, lalu deploy ulang.
+            </div>
+          </div>
+
+          <button class="btn-retry" onclick="location.reload()">
+            🔄 Coba Lagi
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // URL Google Apps Script Anda
+    const APP_URL = "https://script.google.com/macros/s/AKfycbywJyekSJ9AVcLXHCNQp729vxZXfi_ptas2DjhmGAy2glgF1lmpj1qfHOXoOnrDP18Lhw/exec";
+    
+    const appFrame = document.getElementById("appFrame");
+    const loading = document.getElementById("loading");
+    const iframeContainer = document.getElementById("iframeContainer");
+    const errorContainer = document.getElementById("errorContainer");
+    
+    // Tampilkan URL script untuk memudahkan debugging
+    document.getElementById("scriptUrlDisplay").textContent = APP_URL;
+
+    const startTime = Date.now();
+    const MIN_LOAD_TIME = 6000; 
+    
+    function loadApp() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      
+      let targetUrl = APP_URL;
+      
+      if (id) {
+        if (targetUrl.indexOf("?") !== -1) {
+             targetUrl += "&id=" + id;
+        } else {
+             targetUrl += "?id=" + id;
+        }
+      }
+      
+      appFrame.src = targetUrl;
+    }
+    
+    function hideLoading() {
+      loading.classList.add("hidden");
+    }
+
+    function showError() {
+      // Sembunyikan iframe dan loading, tampilkan pesan error
+      iframeContainer.style.display = "none";
+      errorContainer.style.display = "flex";
+      loading.classList.add("hidden");
+    }
+
+    // ==========================================
+    // DETEKSI JIKA IFRAME GAGAL MEMUAT
+    // ==========================================
+    appFrame.addEventListener("error", function() {
+      showError();
+    });
+    
+    appFrame.addEventListener("load", function() {
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = MIN_LOAD_TIME - elapsedTime;
+
+      if (remainingTime > 0) {
+        setTimeout(hideLoading, remainingTime);
+      } else {
+        hideLoading();
+      }
+    });
+    
+    // ==========================================
+    // TANGKAP PESAN DOWNLOAD DARI IFRAME
+    // ==========================================
+    window.addEventListener("message", function(event) {
+      if (event.data && event.data.action === "download" && event.data.url) {
+        window.open(event.data.url, "_blank");
+      }
+    });
+
+    window.addEventListener("DOMContentLoaded", loadApp);
+  </script>
+</body>
+</html>
