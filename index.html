@@ -289,8 +289,9 @@
 
   <script>
     // URL Google Apps Script Anda
-    const APP_URL = "https://script.google.com/macros/s/AKfycbywJyekSJ9AVcLXHCNQp729vxZXfi_ptas2DjhmGAy2glgF1lmpj1qfHOXoOnrDP18Lhw/exec";
-    
+    const ORIGINAL_URL = "https://script.google.com/macros/s/AKfycbywJyekSJ9AVcLXHCNQp729vxZXfi_ptas2DjhmGAy2glgF1lmpj1qfHOXoOnrDP18Lhw/exec";
+     const PROXY_PREFIX = "https://corsproxy.io/?url=";
+    const APP_URL = PROXY_PREFIX + encodeURIComponent(ORIGINAL_URL);
     const appFrame = document.getElementById("appFrame");
     const loading = document.getElementById("loading");
     const iframeContainer = document.getElementById("iframeContainer");
